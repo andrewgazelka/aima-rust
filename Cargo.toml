@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7.3"
+iced = {version = "0.1", features = ["canvas"]}
+toml = "0.5"

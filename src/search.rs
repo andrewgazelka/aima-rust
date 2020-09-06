@@ -1,44 +1,29 @@
+use iced::{Application, Command, Element, executor, Text, Column};
+use rand::Rng;
+
 use crate::search::Action::To;
-use crate::search::RomaniaState::{Oradea, Zerind, Arad, Timisoara, Lugoj, Mehadia, Drobeta, Craiova, RimnicuVilcea, Sibiu, Fagarus, Pitesti, Bucharest, Giurgiu, Urzieni, Hirsova, Eforie, Vaslui, Iasi, Neamt};
-use rand::{Rng};
+use crate::search::RomaniaState::{Arad, Bucharest, Craiova, Drobeta, Eforie, Fagarus, Giurgiu, Hirsova, Iasi, Lugoj, Mehadia, Neamt, Oradea, Pitesti, RimnicuVilcea, Sibiu, Timisoara, Urzieni, Vaslui, Zerind};
 
 #[derive(Debug)]
 pub struct Transition<T> {
     to: T,
-    step_cost: i32
+    step_cost: i32,
 }
 
-pub trait SearchProblem<A,B> {
-    fn initial_state(&self) -> &A; // 1
-    fn actions(&self, state: &A) -> Vec<B>; // 2
-    fn transition_model(&self, state: &A, action: &B) -> Transition<A>; // 3, 4
+
+pub trait SearchProblem<A, B> {
+    fn initial_state(&self) -> &A;
+    // 1
+    fn actions(&self, state: &A) -> Vec<B>;
+    // 2
+    fn transition_model(&self, state: &A, action: &B) -> Transition<A>;
+    // 3, 4
     fn is_goal(&self, state: &A) -> bool; // 4
 }
 
 
 #[derive(Debug, Eq, PartialEq, Clone)]
-pub enum RomaniaState {
-    Oradea,
-    Zerind,
-    Arad,
-    Timisoara,
-    Lugoj,
-    Mehadia,
-    Drobeta,
-    Craiova,
-    RimnicuVilcea,
-    Sibiu,
-    Fagarus,
-    Pitesti,
-    Bucharest,
-    Giurgiu,
-    Urzieni,
-    Hirsova,
-    Eforie,
-    Vaslui,
-    Iasi,
-    Neamt
-}
+pub enum RomaniaState { Oradea, Zerind, Arad, Timisoara, Lugoj, Mehadia, Drobeta, Craiova, RimnicuVilcea, Sibiu, Fagarus, Pitesti, Bucharest, Giurgiu, Urzieni, Hirsova, Eforie, Vaslui, Iasi, Neamt }
 
 pub enum Action {
     To(RomaniaState)
@@ -53,8 +38,8 @@ pub struct RomaniaSearchProblem {
 }
 
 impl RomaniaSearchProblem {
-
     pub fn init() -> RomaniaSearchProblem {
+
         let connections = vec!(
             Connection(Oradea, Zerind, 71),
             Connection(Zerind, Arad, 75),
@@ -82,8 +67,8 @@ impl RomaniaSearchProblem {
         return RomaniaSearchProblem {
             connections,
             goal: RomaniaState::Bucharest,
-            initial_state: RomaniaState::Arad
-        }
+            initial_state: RomaniaState::Arad,
+        };
     }
 
     // TODO: move needed?
@@ -105,11 +90,11 @@ impl SearchProblem<RomaniaState, Action> for RomaniaSearchProblem {
 
     fn actions(&self, state: &RomaniaState) -> Vec<Action> {
         self.find_connections(state.clone()).map(|x| {
-           if &x.0 == state{
-               Action::To(x.1.clone())
-           } else {
-               Action::To(x.0.clone())
-           }
+            if &x.0 == state {
+                Action::To(x.1.clone())
+            } else {
+                Action::To(x.0.clone())
+            }
         }).collect()
     }
 
@@ -117,7 +102,7 @@ impl SearchProblem<RomaniaState, Action> for RomaniaSearchProblem {
         match action {
             To(to) => Transition {
                 to: to.clone(),
-                step_cost: self.find_connection(state.clone(), to.clone()).unwrap().2
+                step_cost: self.find_connection(state.clone(), to.clone()).unwrap().2,
             }
         }
     }
@@ -128,28 +113,28 @@ impl SearchProblem<RomaniaState, Action> for RomaniaSearchProblem {
 }
 
 #[derive(Debug)]
-pub struct SearchSolver {
+pub struct RandomSearchSolver {
     path: Vec<RomaniaState>,
-    cost: i32
+    cost: i32,
 }
 
-impl SearchSolver {
-    pub fn new() -> SearchSolver {
-        SearchSolver {
+impl RandomSearchSolver {
+    pub fn new() -> RandomSearchSolver {
+        RandomSearchSolver {
             path: vec!(),
-            cost: 0
+            cost: 0,
         }
     }
-    pub fn solve(&mut self, search_problem: &dyn SearchProblem<RomaniaState, Action>){
+    pub fn solve(&mut self, search_problem: &dyn SearchProblem<RomaniaState, Action>) {
         let mut state = search_problem.initial_state().clone();
         self.path.push(state.clone()); // initial state
         let mut random = rand::thread_rng();
         loop {
             let actions = search_problem.actions(&state);
-            let index = random.gen_range(0,actions.len());
+            let index = random.gen_range(0, actions.len());
             let chosen_action = &actions[index];
-            let Transition {to , step_cost} = search_problem.transition_model(&state, chosen_action);
-            self.cost+=step_cost;
+            let Transition { to, step_cost } = search_problem.transition_model(&state, chosen_action);
+            self.cost += step_cost;
             self.path.push(to.clone());
             if search_problem.is_goal(&to) {
                 break;
@@ -157,5 +142,36 @@ impl SearchSolver {
             state = to;
         }
         println!("solved {:?}", self);
+    }
+}
+
+pub struct SearchDisplay {
+    path: Vec<RomaniaState>
+}
+
+impl Application for SearchDisplay {
+    type Executor = executor::Null;
+    type Message = ();
+    type Flags = ();
+
+    fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
+        let problem = RomaniaSearchProblem::init();
+        let mut solver = RandomSearchSolver::new();
+        solver.solve(&problem);
+        let display = SearchDisplay { path: solver.path };
+        (display, Command::none())
+    }
+
+    fn title(&self) -> String {
+        String::from("aima rust")
+    }
+
+    fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+        Command::none()
+    }
+
+    fn view(&mut self) -> Element<'_, Self::Message> {
+        let vec = self.path.iter().map(|x| Text::new(format!("yeet {:?}", x)).into()).collect();
+        Column::with_children(vec).into()
     }
 }

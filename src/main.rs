@@ -1,17 +1,25 @@
 // use crate::agents::SimpleReflexAgent;
 // use crate::environments::{Environment, RandomEnvironment};
 
-use crate::search::{RomaniaSearchProblem, SearchSolver};
+use std::fs;
+
+use iced::{Application, Settings};
+use toml::Value;
+use toml::value::Table;
+
+use crate::graph::UndirectedGraphImpl;
+use crate::search::{RandomSearchSolver, RomaniaSearchProblem, SearchDisplay};
 
 mod environments;
 mod agents;
 mod search;
+mod graph;
+
 
 fn main() {
-    let problem = RomaniaSearchProblem::init();
-    let mut solver = SearchSolver::new();
-    solver.solve(&problem);
-    println!("done!");
+    println!("yeehaw");
+    let graph = UndirectedGraphImpl::new("data/romania_locations.toml", "data/romania_distances.toml");
+    println!("graph {:?}", graph);
 }
 
 /*
