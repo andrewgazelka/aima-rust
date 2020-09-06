@@ -1,14 +1,17 @@
-use crate::agents::SimpleReflexAgent;
-use crate::environments::{Environment, RandomEnvironment};
+// use crate::agents::SimpleReflexAgent;
+// use crate::environments::{Environment, RandomEnvironment};
+
+use crate::search::{RomaniaSearchProblem, SearchSolver};
 
 mod environments;
 mod agents;
+mod search;
 
 fn main() {
-    let agent = SimpleReflexAgent::new();
-    let mut env = RandomEnvironment::new(Box::new(agent));
-    env.run(1_000);
-    println!("env {:?}", env);
+    let problem = RomaniaSearchProblem::init();
+    let mut solver = SearchSolver::new();
+    solver.solve(&problem);
+    println!("done!");
 }
 
 /*

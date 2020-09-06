@@ -27,6 +27,7 @@ pub struct State {
     pub location: usize,
 }
 
+///
 #[derive(Debug)]
 pub struct RandomEnvironment {
     squares: Vec<Square>,
