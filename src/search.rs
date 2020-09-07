@@ -3,6 +3,7 @@ use rand::Rng;
 
 use crate::search::Action::To;
 use crate::search::RomaniaState::{Arad, Bucharest, Craiova, Drobeta, Eforie, Fagarus, Giurgiu, Hirsova, Iasi, Lugoj, Mehadia, Neamt, Oradea, Pitesti, RimnicuVilcea, Sibiu, Timisoara, Urzieni, Vaslui, Zerind};
+use crate::graph::{UndirectedGraphImpl, UndirectedGraph, StringNode};
 
 #[derive(Debug)]
 pub struct Transition<T> {
@@ -145,33 +146,38 @@ impl RandomSearchSolver {
     }
 }
 
-pub struct SearchDisplay {
-    path: Vec<RomaniaState>
-}
-
-impl Application for SearchDisplay {
-    type Executor = executor::Null;
-    type Message = ();
-    type Flags = ();
-
-    fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
-        let problem = RomaniaSearchProblem::init();
-        let mut solver = RandomSearchSolver::new();
-        solver.solve(&problem);
-        let display = SearchDisplay { path: solver.path };
-        (display, Command::none())
-    }
-
-    fn title(&self) -> String {
-        String::from("aima rust")
-    }
-
-    fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
-        Command::none()
-    }
-
-    fn view(&mut self) -> Element<'_, Self::Message> {
-        let vec = self.path.iter().map(|x| Text::new(format!("yeet {:?}", x)).into()).collect();
-        Column::with_children(vec).into()
-    }
-}
+// pub struct SearchDisplay {
+//     graph: Box<dyn UndirectedGraph<StringNode>>
+// }
+//
+//
+// // impl canvas::Program<Message> for Clock {
+// //
+// // }
+//
+// impl Application for SearchDisplay {
+//     type Executor = executor::Null;
+//     type Message = ();
+//     type Flags = ();
+//
+//     fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
+//         // let problem = RomaniaSearchProblem::init();
+//         // let mut solver = RandomSearchSolver::new();
+//         // solver.solve(&problem);
+//         let display = SearchDisplay { graph: Box::new(UndirectedGraphImpl::romania()) };
+//         (display, Command::none())
+//     }
+//
+//     fn title(&self) -> String {
+//         String::from("aima rust")
+//     }
+//
+//     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+//         Command::none()
+//     }
+//
+//     fn view(&mut self) -> Element<'_, Self::Message> {
+//         let vec = self.path.iter().map(|x| Text::new(format!("yeet {:?}", x)).into()).collect();
+//         Column::with_children(vec).into()
+//     }
+// }
