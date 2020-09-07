@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 use std::error::Error;
-use std::{fs, io};
-
-use serde::{Deserialize, Serialize};
 use std::fs::read_to_string;
-use toml::Value;
+
+use serde::Deserialize;
 
 pub struct To<T>(T, i64);
 
@@ -30,10 +28,7 @@ pub struct Location(i64, i64);
 
 impl UndirectedGraphImpl<StringNode> {
     pub fn romania() -> Result<UndirectedGraphImpl<StringNode>, Box<dyn Error>> {
-        return UndirectedGraphImpl::new(
-            "data/romania_locations.toml",
-            "data/romania_distances.toml",
-        );
+        UndirectedGraphImpl::new("data/romania_locations.toml", "data/romania_distances.toml")
     }
 
     pub fn new(
@@ -59,13 +54,13 @@ impl UndirectedGraphImpl<StringNode> {
                 connections.push(connection);
             }
         }
-        return Ok(UndirectedGraphImpl {
+        Ok(UndirectedGraphImpl {
             connections,
             nodes: locations
                 .into_iter()
                 .map(|(name, loc)| StringNode(name, loc))
                 .collect(),
-        });
+        })
     }
 }
 
@@ -79,10 +74,10 @@ impl<T: PartialEq> UndirectedGraph<T> for UndirectedGraphImpl<T> {
                 vec.push(To(a, *dist));
             }
         }
-        return vec;
+        vec
     }
 
     fn list_nodes(&self) -> &[T] {
-        return self.nodes.as_slice();
+        self.nodes.as_slice()
     }
 }
