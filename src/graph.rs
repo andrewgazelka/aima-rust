@@ -2,7 +2,10 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs::read_to_string;
 
+use serde::export::Formatter;
 use serde::Deserialize;
+use std::fmt;
+use std::fmt::Debug;
 
 pub struct To<T>(pub T, pub i64);
 
@@ -20,8 +23,14 @@ pub struct UndirectedGraphImpl<T> {
     nodes: Vec<T>,
 }
 
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Eq)]
 pub struct StringNode(String, Location);
+
+impl Debug for StringNode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
 
 impl PartialEq for StringNode {
     fn eq(&self, other: &Self) -> bool {
@@ -31,7 +40,7 @@ impl PartialEq for StringNode {
 
 impl StringNode {
     pub fn from(string: String) -> StringNode {
-        StringNode (string, Location(0,0))
+        StringNode(string, Location(0, 0))
     }
 }
 

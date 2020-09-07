@@ -6,8 +6,6 @@ use std::error::Error;
 use crate::graph::{StringNode, UndirectedGraphImpl};
 use crate::search::{GenericSearchProblem, RandomSearchSolver};
 
-mod agents;
-mod environments;
 mod graph;
 mod search;
 

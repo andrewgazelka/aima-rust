@@ -58,7 +58,6 @@ pub struct RandomSearchSolver<'a, T: Debug + Clone> {
 
 impl<'a, T: Debug + Clone> Debug for RandomSearchSolver<'a, T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        println!("debug...");
         f.debug_struct("RandomSearchSolver")
             .field("path", &self.path)
             .field("cost", &self.cost)
@@ -75,7 +74,6 @@ impl<T: Debug + Clone> RandomSearchSolver<'_, T> {
         }
     }
     pub fn solve(&mut self) {
-        println!("solving!");
         let search_problem = self.problem;
         let mut state = search_problem.initial_state();
         self.path.push(state); // initial state
