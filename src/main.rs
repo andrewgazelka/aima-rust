@@ -4,7 +4,7 @@
 use std::error::Error;
 
 use crate::graph::{StringNode, UndirectedGraphImpl};
-use crate::search::{GenericSearchProblem, RandomSearchSolver};
+use crate::search::{GenericSearchProblem, RandomSearchSolver, SearchData, SearchSolver};
 
 mod graph;
 mod search;
@@ -14,8 +14,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let a = StringNode::from("Arad".to_string());
     let b = StringNode::from("Bucharest".to_string());
     let problem = GenericSearchProblem::new(&a, &b, &graph);
-    let mut solver = RandomSearchSolver::new(&problem);
-    solver.solve();
+    let solver = RandomSearchSolver::new();
+    let data: SearchData<StringNode> = solver.solve(&problem);
+    println!("solved {:?}", data);
     Ok(())
 }
 
