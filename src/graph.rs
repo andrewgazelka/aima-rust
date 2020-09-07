@@ -4,7 +4,7 @@ use std::fs::read_to_string;
 
 use serde::Deserialize;
 
-pub struct To<T>(T, i64);
+pub struct To<T>(pub T, pub i64);
 
 #[derive(Debug)]
 struct Connection<T>(T, T, i64);
@@ -20,8 +20,20 @@ pub struct UndirectedGraphImpl<T> {
     nodes: Vec<T>,
 }
 
-#[derive(Eq, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, Eq)]
 pub struct StringNode(String, Location);
+
+impl PartialEq for StringNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl StringNode {
+    pub fn from(string: String) -> StringNode {
+        StringNode (string, Location(0,0))
+    }
+}
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Clone)]
 pub struct Location(i64, i64);
